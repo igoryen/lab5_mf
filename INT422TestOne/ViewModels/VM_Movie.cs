@@ -7,6 +7,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace INT422TestOne.ViewModels
 {
+    public class MovieCreate
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public string Title { get; set; }
+        [Required]
+        public decimal TicketPrice { get; set; }
+        public int DirectorId { get; set; }
+
+    }
     public class MovieBase {
         [Key]
         public int Id { get; set; }

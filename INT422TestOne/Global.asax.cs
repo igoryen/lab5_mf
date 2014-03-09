@@ -41,9 +41,7 @@ namespace INT422TestOne
 
             //other maps
 
-            //Mapper.CreateMap<ViewModels.MovieAdd, Models.Movie>();
-
-            //Mapper.CreateMap<ViewModels.MovieAdd, ViewModels.MovieAddForm>();
+            Mapper.CreateMap<ViewModels.MovieCreate, Models.Movie>();
         }
     }
 }

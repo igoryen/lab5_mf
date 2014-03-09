@@ -1,17 +1,17 @@
-﻿@model INT422TestOne.ViewModels.MovieFull
+﻿@model INT422TestOne.ViewModels.MovieCreate
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "MovieCreate";
 }
 
-<h2>Create</h2>
+<h2>MovieCreate</h2>
 
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h5>(via /Movie/Create using FormCollection)</h5>
+        <h5>(via /Movie/MovieCreate using MovieCreate)</h5>
         <hr />
         @Html.ValidationSummary(true)
 
@@ -32,19 +32,11 @@
         </div>
 
         <div class="form-group">
+            @Html.LabelFor(model => model.DirectorId, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <h4>Choose the Movie Genres</h4>
-                @Html.ListBox("genres")
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-10">
-                <h4>Choose the Movie's Director</h4>
                 @Html.DropDownList("directors")
             </div>
         </div>
-
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

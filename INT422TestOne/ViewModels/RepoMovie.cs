@@ -9,6 +9,65 @@ namespace INT422TestOne.ViewModels
 {
     public class RepoMovie: RepositoryBase
     {
+
+///////////////////////////////////////////////////////
+//  AUTOMAPPER (Create/Edit/Delete and Get methods)
+///////////////////////////////////////////////////////
+
+        public MovieFull amCreateMovie(ViewModels.MovieCreate newItem, string d)
+        {
+            Models.Movie movie = Mapper.Map<Models.Movie>(newItem);
+
+            int did = Convert.ToInt32(d);
+            movie.Director = dc.Directors.FirstOrDefault(n => n.Id == did);
+
+            dc.Movies.Add(movie);
+            dc.SaveChanges();
+
+            return Mapper.Map<MovieFull>(movie);
+        }
+
+        public MovieFull amEditMovie(MovieFull editItem)
+        {
+            var itemToEdit = dc.Movies.Find(editItem.Id);
+
+            if (itemToEdit == null)
+            {
+                return null;
+            }
+            else
+            {
+                dc.Entry(itemToEdit).CurrentValues.SetValues(editItem);
+                dc.SaveChanges();
+            }
+
+            return Mapper.Map<MovieFull>(editItem);
+        }
+
+        public void DeleteMovie(int? id)
+        {
+            var itemToDelete = dc.Movies.Find(id);
+
+            if (itemToDelete == null)
+            {
+                return;
+            }
+            else
+            {
+                try
+                {
+                    dc.Movies.Remove(itemToDelete);
+                    dc.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+            }
+
+         }
+
         // Get one MovieFull
         public MovieFull amGetMovieFull(int? id)
         {
@@ -18,6 +77,46 @@ namespace INT422TestOne.ViewModels
             else return Mapper.Map<MovieFull>(movie);
 
         }
+
+        // Get all (ListOf) MovieFull
+        public IEnumerable<MovieBase> amGetListOfMovieBase() {
+            var movies = dc.Movies.OrderBy(m => m.Title);
+            
+            if (movies == null) return null;
+
+            return Mapper.Map<IEnumerable<MovieBase>>(movies);
+        }
+
+
+/////////////////////////
+// WITHOUT AUTOMAPPER
+/////////////////////////
+
+
+        public MovieFull createMovie(string title, string price, string gids, string d)
+        {
+            Models.Movie m = new Models.Movie();
+
+            m.Title = title;
+            m.TicketPrice = Convert.ToDecimal(price);
+
+            foreach (var item in gids.Split(','))
+            {
+                var intItem = Convert.ToInt32(item);
+                var g = dc.Genres.FirstOrDefault(gg => gg.Id == intItem);
+                m.Genres.Add(g);
+            }
+
+            int did = Convert.ToInt32(d);
+            m.Director = dc.Directors.FirstOrDefault(n => n.Id == did);
+
+            dc.Movies.Add(m);
+            dc.SaveChanges();
+
+            return getMovieFull(m.Id);
+            // return amGetMovieFull(m.Id);   // alternate method
+        }
+
         public MovieFull getMovieFull(int? id)
         {
             var movie = dc.Movies.Include("Genres").Include("Director").SingleOrDefault(n => n.Id == id);
@@ -28,20 +127,11 @@ namespace INT422TestOne.ViewModels
             mf.Id = movie.Id;
             mf.Title = movie.Title;
             mf.TicketPrice = movie.TicketPrice;
-            //mf.Director = rd.toDirectorFull(movie.Director);
+            //mf.Director = rd.toDirectorFull(movie.Director);      // (alternate method)
             mf.Director = rd.getDirectorFull(movie.Director.Id);
             mf.Genres = rg.toListOfGenreBase(movie.Genres);
 
             return mf;
-        }
-        
-        // Get all (ListOf) MovieFull
-        public IEnumerable<MovieBase> amGetListOfMovieBase() {
-            var movies = dc.Movies.OrderBy(m => m.Title);
-            
-            if (movies == null) return null;
-
-            return Mapper.Map<IEnumerable<MovieBase>>(movies);
         }
 
         public IEnumerable<MovieBase> getListOfMovieBase(){
@@ -59,6 +149,7 @@ namespace INT422TestOne.ViewModels
 
             return mbls;
         }
+
         public IEnumerable<MovieFull> getListOfMovieFull(){
 
             var movies = dc.Movies.Include("Genres").OrderBy(m => m.Title);
@@ -77,30 +168,7 @@ namespace INT422TestOne.ViewModels
 
             return mfls;
         }
-
-        public MovieFull createMovie(string title, string price, string gids, string d)
-        {
-            Models.Movie m = new Models.Movie();
-            
-            m.Title = title;
-            m.TicketPrice = Convert.ToDecimal(price);
-
-            foreach (var item in gids.Split(','))
-            {
-                var intItem = Convert.ToInt32(item);
-                var g =dc.Genres.FirstOrDefault(gg => gg.Id == intItem);
-                m.Genres.Add(g);
-            }
-
-            int did = Convert.ToInt32(d);
-            m.Director = dc.Directors.FirstOrDefault(n => n.Id == did);
-
-            dc.Movies.Add(m);
-            dc.SaveChanges();
-
-            // return getMovieFull(m.Id);
-            return amGetMovieFull(m.Id);
-        }
+ 
         public List<MovieBase> toListOfMovieBase(List<Models.Movie> movies) {
 
             List<MovieBase> mbls = new List<MovieBase>();
@@ -115,6 +183,9 @@ namespace INT422TestOne.ViewModels
             return mbls;
         }
 
+////////////////////////////////////////////
+// CONSTRUCTOR and Implementation Details
+////////////////////////////////////////////
         public RepoMovie(){
             rd = new RepoDirector();
             rg = new RepoGenre();

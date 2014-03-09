@@ -18,5 +18,7 @@ namespace INT422TestOne.Models
 
         public System.Data.Entity.DbSet<INT422TestOne.ViewModels.GenreBase> GenreBases { get; set; }
 
+        public System.Data.Entity.DbSet<INT422TestOne.ViewModels.MovieCreate> MovieCreates { get; set; }
+
     }
 }
