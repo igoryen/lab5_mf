@@ -17,14 +17,16 @@ namespace INT422TestOne.Controllers
         // GET: /Movie/
         public ActionResult Index()
         {
-            return View(repo.getListOfMovieBase());
+            //return View(repo.getListOfMovieBase());
+            return View(repo.amGetListOfMovieBase());
         }
 
         //
         // GET: /Movie/Details/5
         public ActionResult Details(int id)
         {
-            return View(repo.getMovieFull(id));
+            //return View(repo.getMovieFull(id));
+            return View(repo.amGetMovieFull(id));
         }
 
         //

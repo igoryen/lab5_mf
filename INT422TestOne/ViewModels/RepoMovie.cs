@@ -3,11 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using INT422TestOne.ViewModels;
+using AutoMapper;
 
 namespace INT422TestOne.ViewModels
 {
     public class RepoMovie: RepositoryBase
     {
+        // Get one MovieFull
+        public MovieFull amGetMovieFull(int? id)
+        {
+            var movie = dc.Movies.Include("Genres").Include("Director").SingleOrDefault(n => n.Id == id);
+
+            if (movie == null) return null;
+            else return Mapper.Map<MovieFull>(movie);
+
+        }
         public MovieFull getMovieFull(int? id)
         {
             var movie = dc.Movies.Include("Genres").Include("Director").SingleOrDefault(n => n.Id == id);
@@ -15,7 +25,7 @@ namespace INT422TestOne.ViewModels
             if (movie == null) return null;
 
             MovieFull mf = new MovieFull();
-            mf.MovieId = movie.Id;
+            mf.Id = movie.Id;
             mf.Title = movie.Title;
             mf.TicketPrice = movie.TicketPrice;
             //mf.Director = rd.toDirectorFull(movie.Director);
@@ -23,6 +33,15 @@ namespace INT422TestOne.ViewModels
             mf.Genres = rg.toListOfGenreBase(movie.Genres);
 
             return mf;
+        }
+        
+        // Get all (ListOf) MovieFull
+        public IEnumerable<MovieBase> amGetListOfMovieBase() {
+            var movies = dc.Movies.OrderBy(m => m.Title);
+            
+            if (movies == null) return null;
+
+            return Mapper.Map<IEnumerable<MovieBase>>(movies);
         }
 
         public IEnumerable<MovieBase> getListOfMovieBase(){
@@ -33,7 +52,7 @@ namespace INT422TestOne.ViewModels
 
             foreach(var item in movies){
                 MovieBase mf = new MovieBase();
-                mf.MovieId = item.Id;
+                mf.Id = item.Id;
                 mf.Title = item.Title;
                 mbls.Add(mf);
             }
@@ -48,7 +67,7 @@ namespace INT422TestOne.ViewModels
 
             foreach(var item in movies){
                 MovieFull mf = new MovieFull();
-                mf.MovieId = item.Id;
+                mf.Id = item.Id;
                 mf.Title = item.Title;
                 mf.TicketPrice = item.TicketPrice;
                 mf.Director = rd.getDirectorFull(item.Id);
@@ -79,7 +98,8 @@ namespace INT422TestOne.ViewModels
             dc.Movies.Add(m);
             dc.SaveChanges();
 
-            return getMovieFull(m.Id);
+            // return getMovieFull(m.Id);
+            return amGetMovieFull(m.Id);
         }
         public List<MovieBase> toListOfMovieBase(List<Models.Movie> movies) {
 
@@ -87,7 +107,7 @@ namespace INT422TestOne.ViewModels
 
             foreach (var item in movies) {
                 MovieBase mm = new MovieBase();
-                mm.MovieId = item.Id;
+                mm.Id = item.Id;
                 mm.Title = item.Title;
                 mbls.Add(mm);
             }

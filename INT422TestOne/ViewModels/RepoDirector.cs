@@ -21,7 +21,7 @@ namespace INT422TestOne.ViewModels
             foreach (var item in director.Movies)
             {
                 MovieBase mb = new MovieBase();
-                mb.MovieId = item.Id;
+                mb.Id = item.Id;
                 mb.Title = item.Title;
                 mv.Add(mb);
             }
@@ -57,7 +57,7 @@ namespace INT422TestOne.ViewModels
             df.Movies = new List<MovieBase>();
             foreach (var item in d.Movies){
                 MovieBase m = new MovieBase();
-                m.MovieId = item.Id;
+                m.Id = item.Id;
                 m.Title = item.Title;
                 df.Movies.Add(m);
             }
